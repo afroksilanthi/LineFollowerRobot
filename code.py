@@ -47,39 +47,23 @@ def InfraredInit():
     # Left IR Sensor
     LInfrared = machine.Pin(IRPins["LEFT"], machine.Pin.IN, machine.Pin.PULL_DOWN)
 
-# --- Movement ---
-# def RForward():
-#     pwmRMRed.duty_u16(MSpeed)
-#     pwmRMBlack.duty_u16(0)
-# 
-# def RStop():
-#     pwmRMRed.duty_u16(0)
-#     pwmRMBlack.duty_u16(0)
-# 
-# def LForward():
-#     pwmLMRed.duty_u16(MSpeed)
-#     pwmLMBlack.duty_u16(0)
-# 
-# def LStop():
-#     pwmLMRed.duty_u16(0)
-#     pwmLMBlack.duty_u16(0)
+# Run init functions
+MotorsInit()
+InfraredInit()
 
+# --- Sensor readings ---
 def IRPosition():
     # If black line is on the center then return 0
     # If black line is on the right then return 1
     # If black line is on the left then return -1
     return (RInfrared.value() - LInfrared.value())
 
-# Run init functions
-MotorsInit()
-InfraredInit()
-
-# Init values
+# Initial values
 I = 0
 LMSpeed = RMSpeed = 0
 lastError = 0
 
-# Main
+# Main loop
 while True:
     error = IRPosition()
     #print(f'Error: {error}')
