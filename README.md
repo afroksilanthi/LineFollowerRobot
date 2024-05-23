@@ -1,11 +1,20 @@
 # Documentation for Line Follower
+![Static Badge](https://img.shields.io/badge/MicroPython-%232b2728?style=flat-square&logo=micropython)
+![Static Badge](https://img.shields.io/badge/Raspberry%20Pi%20Pico-%23a22846?style=flat-square&logo=raspberrypi)
+
 Robot for following a line using simple parts and best performance.<br>
 Written in [micropython](https://docs.micropython.org/en/latest/).
 
 ## Getting Started
-### Setup
-### Usage
-### Parts
+### 💻 Setup
+Install the approriate firmware on your Pico microcontroller from [here](https://micropython.org/download/).
+
+Using [Thonny](https://thonny.org/), you may copy the files in the microcontroller and rename **code.py** to **main.py**.
+
+### 📍 Use
+Before powering up the board, place the robot on top of the track. After turning on, there is a 2 seconds calibration delay that assigns the white and black values.
+
+### ⚙️ Parts
 * Maker Pi RP2040
 * Tracker Sensor (5 Channel IR sensor)
 * 2pcs DC Electric Motor & tire wheel
@@ -37,7 +46,7 @@ All these, helped the robot to act faster, find the errors and move acurate when
 - **percentage()**<br>
 *Function that converts the speed value of the wheels, to an integer percentage value.*<br>
  Parameters: *percent* <br>
- Returns: *integer value of the speed percentage*
+ Returns: *Number*
 
 - **MotorsInit()**<br>
 *Function that initialize the motors, connect them with the board pins and sets PWM to desired frequency.*<br>
@@ -55,3 +64,27 @@ All these, helped the robot to act faster, find the errors and move acurate when
  Returns: *None*
 
 **TrackerSensor.py:**
+
+- **class TrackerSensor()**<br>
+*Library to communicate with the Waveshare Tracker Sensor*<br>
+ Parameters: *ArrayPins*<br>
+ 
+    - **calibrate()**<br>
+       *Assign sensor min and max values*<br>
+       Parameters: *None*<br>
+       Returns: *None*
+
+     - **read_calibrated()**<br>
+       *Calibrates sensor values according to min and max*<br>
+       Parameters: *None*<br>
+       Returns: *List*
+
+     - **read_line()**<br>
+       *Normalizes calibrated sensor values in range 0-1000*<br>
+       Parameters: *None*<br>
+       Returns: *List*
+
+     - **read_stopped()**<br>
+       *Checks if the robot sees a stopping line*<br>
+       Parameters: *None*<br>
+       Returns: *Boolean*
