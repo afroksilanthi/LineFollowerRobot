@@ -12,21 +12,16 @@ LMRed = pwmLMRed = LMBlack = pwmLMBlack = None
 RMPins = { "RED" : 8,  "BLACK" : 9 }
 RMRed = pwmRMRed = RMBlack = pwmRMBlack = None
 MFreq = 200
-MMax = 60  # Maximum speed in percents
+MMax = 100 #90  # Maximum speed in percents
 
 # IR Sensor array
-ArrPins = {"IR2" : 26, "IR3" : 27, "IR4" : 28}
+ArrPins = {"IR2" : 28, "IR3" : 27, "IR4" : 26}
 pins = [ArrPins["IR2"], ArrPins["IR3"], ArrPins["IR4"]]
 sensor = TrackerSensor(pins)
 
 # LED (for calibration status)
 LEDPin = 0
 led = Pin(LEDPin, Pin.OUT)
-
-# PID
-Kp = 0.05    # Curve smoothness
-Ki = 0.0     # Add lag
-Kd = 0.5     # Tight curve
 
 # --- Initialization ---
 def MotorsInit():
@@ -58,7 +53,7 @@ def runCalibration():
     print("Calibrating...")
     led.value(1)
     start = ticks_ms()
-    while (ticks_ms() - start < 10000):
+    while (ticks_ms() - start < 2000):
         sensor.calibrate()
     led.value(0)
     print("Calibration complete")
@@ -67,39 +62,49 @@ def runCalibration():
 MotorsInit()
 runCalibration()
 
+# PID
+Kp = 0.2  # Curve smoothness
+Ki = 0#0.0001 #0.0005    # Add lag
+Kd = 0.45    # Tight curve
+
 # Init values
-I = 0
+I = lastError = 0
 LMSpeed = RMSpeed = 0
-lastError = 0
 
 # Main
 while True:
     if sensor.read_stopped() == True:
-        LMSpeed = RMSpeed = 0
+        sleep(0.1)
+        if sensor.read_white() == True:
+            pwmLMRed.duty_u16(0)
+            pwmRMRed.duty_u16(0)
+            break
     else:    
         # [-1000, 1000] where 0 means center
         error = sensor.read_line() - 1000
-            
+        
         P = error
         I = I + error
         D = error - lastError
         lastError = error
-
         pwr_diff = P*Kp + I*Ki + D*Kd
+        
+        # Check if the increase/reduction is above max
         if (pwr_diff > MMax):
             pwr_diff = MMax
         if (pwr_diff < -MMax):
             pwr_diff = -MMax
-            
+        
+        # Increase / Reduce the motors
         if (pwr_diff < 0):
             LMSpeed = int(MMax + pwr_diff)
             RMSpeed = MMax
         else:
             LMSpeed = MMax
             RMSpeed = int(MMax - pwr_diff)
-        
-    MotorsValue(LMSpeed, RMSpeed)
-    print(f"L/R: {LMSpeed} / {RMSpeed}")
     
-    sleep(0.1)
+    MotorsValue(LMSpeed, RMSpeed)
+    #print(f"L/R: {LMSpeed} / {RMSpeed}")
+    
+    sleep(0.01)
 

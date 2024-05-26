@@ -25,6 +25,7 @@ class TrackerSensor():
                 self.irmax = ir_val
     
     def read_calibrated(self):
+        # Normalized Range (0-1000)
         results = []
         for i in range(len(self.ir)):
             ir_cal = (self.ir[i].read_u16() - self.irmin) * 1000 / (self.irmax - self.irmin)
@@ -45,5 +46,12 @@ class TrackerSensor():
         ir_norm = self.read_calibrated()
         for i in ir_norm:
             if i > 500:
+                return False
+        return True
+    
+    def read_white(self):
+        ir_norm = self.read_calibrated()
+        for i in ir_norm:
+            if i < 600:
                 return False
         return True
