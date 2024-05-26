@@ -75,16 +75,21 @@ All these, helped the robot to act faster, find the errors and move acurate when
        Returns: *None*
 
      - **read_calibrated()**<br>
-       *Calibrates sensor values according to min and max*<br>
+       *Calibrates and normalizes sensor values according to min and max in range 0-1000*<br>
        Parameters: *None*<br>
        Returns: *List*
 
      - **read_line()**<br>
-       *Normalizes calibrated sensor values in range 0-1000*<br>
+       *Calculates the position of the line*<br>
        Parameters: *None*<br>
-       Returns: *List*
+       Returns: *Number*
 
      - **read_stopped()**<br>
        *Checks if the robot sees a stopping line*<br>
+       Parameters: *None*<br>
+       Returns: *Boolean*
+
+     - **read_white()**<br>
+       *Checks if the robot is located in a white space*<br>
        Parameters: *None*<br>
        Returns: *Boolean*
