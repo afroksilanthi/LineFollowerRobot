@@ -5,7 +5,7 @@ class TrackerSensor():
     pins = []
     ir = []
     
-    # Calibration / Norm paramemeters
+    # Calibration / Norm parameters
     irmin = 65535
     irmax = 0
     
@@ -17,6 +17,7 @@ class TrackerSensor():
             print(i)
     
     def calibrate(self):
+        # Adjust min and max values
         for i in range(len(self.ir)):
             ir_val = self.ir[i].read_u16()
             if (ir_val < self.irmin):
@@ -34,6 +35,7 @@ class TrackerSensor():
         return results
 
     def read_line(self):
+        # Find the position of the line
         ir_norm = self.read_calibrated()
         
         y = d = 0
@@ -43,6 +45,7 @@ class TrackerSensor():
         return y / d
     
     def read_stopped(self):
+        # Detect black horizontal line
         ir_norm = self.read_calibrated()
         for i in ir_norm:
             if i > 500:
@@ -50,6 +53,7 @@ class TrackerSensor():
         return True
     
     def read_white(self):
+        # Detect white space
         ir_norm = self.read_calibrated()
         for i in ir_norm:
             if i < 600:
