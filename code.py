@@ -12,7 +12,7 @@ LMRed = pwmLMRed = LMBlack = pwmLMBlack = None
 RMPins = { "RED" : 8,  "BLACK" : 9 }
 RMRed = pwmRMRed = RMBlack = pwmRMBlack = None
 MFreq = 200
-MMax = 100 #90  # Maximum speed in percents
+MMax = 100  # Maximum speed in percent
 
 # IR Sensor array
 ArrPins = {"IR2" : 28, "IR3" : 27, "IR4" : 26}
@@ -23,7 +23,6 @@ sensor = TrackerSensor(pins)
 LEDPin = 0
 led = Pin(LEDPin, Pin.OUT)
 
-# --- Initialization ---
 def MotorsInit():
     # Initialize motors and setup PWM to the desired frequency.
     global LMRed, pwmLMRed, LMBlack, pwmLMBlack
@@ -50,6 +49,7 @@ def MotorsValue(l, r):
     pwmRMBlack.duty_u16(0)
 
 def runCalibration():
+    # Calibrate sensor values for 2 seconds
     print("Calibrating...")
     led.value(1)
     start = ticks_ms()
@@ -63,9 +63,9 @@ MotorsInit()
 runCalibration()
 
 # PID
-Kp = 0.2  # Curve smoothness
-Ki = 0#0.0001 #0.0005    # Add lag
-Kd = 0.45    # Tight curve
+Kp = 0.2      # Curve smoothness
+Ki = 0        # Add lag
+Kd = 0.45     # Tight curve
 
 # Init values
 I = lastError = 0
@@ -73,16 +73,18 @@ LMSpeed = RMSpeed = 0
 
 # Main
 while True:
+    # Check if the sensor reads the stopping line
     if sensor.read_stopped() == True:
         sleep(0.1)
         if sensor.read_white() == True:
             pwmLMRed.duty_u16(0)
             pwmRMRed.duty_u16(0)
             break
-    else:    
+    else:
         # [-1000, 1000] where 0 means center
         error = sensor.read_line() - 1000
         
+        # Execute the PID algorithm
         P = error
         I = I + error
         D = error - lastError
@@ -104,7 +106,6 @@ while True:
             RMSpeed = int(MMax - pwr_diff)
     
     MotorsValue(LMSpeed, RMSpeed)
-    #print(f"L/R: {LMSpeed} / {RMSpeed}")
     
     sleep(0.01)
 
